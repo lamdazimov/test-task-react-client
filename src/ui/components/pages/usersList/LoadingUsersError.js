@@ -1,11 +1,7 @@
-import {Button} from "@qiwi/pijma-desktop";
+import {Actions, Button, Paragraph} from "@qiwi/pijma-desktop";
 import React, {PureComponent} from "react";
-import {styled} from "@qiwi/pijma-core";
+import {Card, Flex, Spacer} from "@qiwi/pijma-core";
 import PropTypes from 'prop-types';
-
-const ViewContainer = styled('div')`
-    text-align: center;
-`;
 
 class LoadingUsersError extends PureComponent {
     static defaultProps = {
@@ -19,15 +15,21 @@ class LoadingUsersError extends PureComponent {
     };
 
     render() {
-        return <ViewContainer>
-            <div>{this.props.message}</div>
-            <Button type='submit'
-                    kind='brand'
-                    size='minor'
-                    text='Попробовать ещё'
-                    onClick={this.props.onTryReload}
-            />
-        </ViewContainer>;
+        return <Flex justify="center">
+            <Spacer>
+                <Card p={7}>
+                    <Paragraph>{this.props.message}</Paragraph>
+                    <Actions size="minor">
+                        <Button type='submit'
+                                kind='brand'
+                                size='minor'
+                                text='Попробовать ещё'
+                                onClick={this.props.onTryReload}
+                        />
+                    </Actions>
+                </Card>
+            </Spacer>
+        </Flex>;
     }
 }
 

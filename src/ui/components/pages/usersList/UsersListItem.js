@@ -1,10 +1,7 @@
 import React, {PureComponent} from "react";
-import {styled} from '@qiwi/pijma-core';
+import {Card} from '@qiwi/pijma-core';
+import {Paragraph} from '@qiwi/pijma-desktop';
 import PropTypes from "prop-types";
-
-const ViewContainer = styled('div')`
-    text-align: center;
-`;
 
 export class UsersListItem extends PureComponent {
     static propTypes = {
@@ -15,9 +12,11 @@ export class UsersListItem extends PureComponent {
     };
 
     render() {
-        return <ViewContainer>
-            Имя: {this.props.user.userName} <br/>
-            Почта: {this.props.user.userEmail}
-        </ViewContainer>;
+        return <Card p={4} bb="1px solid #e6e6e6">
+            <Paragraph size="m">
+                Имя: {this.props.user.userName}<br />
+                Почта: {this.props.user.userEmail}
+            </Paragraph>
+        </Card>;
     }
 }
