@@ -8,5 +8,7 @@ export default connect((state) => ({
     loadingUsers: select.usersList.loadingUsers(state),
     loadingUsersError: select.usersList.loadingUsersError(state),
     errorMessage: select.usersList.errorMessage(state),
+    unauthorized: select.usersList.unauthorized(state),
+    auth: state.auth,
     users: state.usersList.data.items,
 }))(UsersListPage);

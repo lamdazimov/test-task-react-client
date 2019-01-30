@@ -27,6 +27,11 @@ export default class UsersListPage extends React.Component {
     }
 
     render() {
+        if (this.props.unauthorized) {
+            this.props.dispatch.auth.checkAuth();
+            return null;
+        }
+
         const UsersListRow = ({index, style}) => <div style={style}>
             <UsersListItem user={this.props.users[index]}/>
         </div>;

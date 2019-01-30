@@ -1,10 +1,13 @@
 import Machine from '@qiwi/cyclone';
 import {UsersApiService} from "../../api/users";
+import {HttpResponseError} from "@qiwi/let-fly-at-http/build";
+import ls from '../../storage/localStorage';
 
 const INITIAL = 'init';
 const LOADING_USERS = 'loading_users';
 const OK = 'ok';
 const LOADING_USERS_ERROR = 'loading_users_error';
+const UNAUTHORIZED = 'unauthorized';
 
 const machine = new Machine({
     initialState: INITIAL,
@@ -19,6 +22,8 @@ const machine = new Machine({
         'loading_users>ok': (state, res) => res,
         'loading_users>loading_users_error': (state, res) => res,
         'loading_users_error>loading_users': true,
+        'loading_users>unauthorized': true,
+        'unauthorized>loading_users': true,
     },
 });
 
@@ -40,25 +45,27 @@ export default {
                     items,
                 });
             } catch (err) {
-                this.next(LOADING_USERS_ERROR, {error: {...err, userMessage: 'Что-то пошло не так'}});
+                if (err instanceof HttpResponseError && err.response.status === 401) {
+                    ls.removeItem('jwt');
+                    this.next(UNAUTHORIZED);
+                    return;
+                }
+                this.next(LOADING_USERS_ERROR, {error: {userMessage: 'Что-то пошло не так'}});
             }
         },
     },
     selectors: (slice) => ({
+        unauthorized() {
+            return slice(usersList => usersList.state === UNAUTHORIZED);
+        },
         usersLoaded() {
-            return slice(usersList => {
-                return usersList.state === OK;
-            })
+            return slice(usersList => usersList.state === OK);
         },
         loadingUsers() {
-            return slice(usersList => {
-                return usersList.state === LOADING_USERS
-            });
+            return slice(usersList => usersList.state === LOADING_USERS);
         },
         loadingUsersError() {
-            return slice(usersList => {
-                return usersList.state === LOADING_USERS_ERROR;
-            })
+            return slice(usersList => usersList.state === LOADING_USERS_ERROR);
         },
         errorMessage() {
             return slice(usersList => {

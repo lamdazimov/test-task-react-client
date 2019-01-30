@@ -26,7 +26,8 @@ const machine = new Machine({
         'not_auth>auth_submitting': true,
         'auth_submitting>login_error': (state, res) => res,
         'login_error>auth_submitting': true,
-        'auth_submitting>ok': (state, res) => res
+        'auth_submitting>ok': (state, res) => res,
+        'ok>loading': true,
     }
 });
 
