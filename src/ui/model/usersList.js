@@ -1,7 +1,7 @@
 import Machine from '@qiwi/cyclone';
 import {UsersApiService} from "../../api/users";
-import {HttpResponseError} from "@qiwi/let-fly-at-http/build";
 import ls from '../../storage/localStorage';
+import {AuthError} from "../../error/authError";
 
 const INITIAL = 'init';
 const LOADING_USERS = 'loading_users';
@@ -45,7 +45,7 @@ export default {
                     items,
                 });
             } catch (err) {
-                if (err instanceof HttpResponseError && err.response.status === 401) {
+                if (err instanceof AuthError && err.code === AuthError.UNAUTHORIZED) {
                     ls.removeItem('jwt');
                     this.next(UNAUTHORIZED);
                     return;
