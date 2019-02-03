@@ -7,22 +7,19 @@ import LoadingUsersError from "./LoadingUsersError";
 import {FixedSizeList} from 'react-window';
 import {UsersListItem} from "./UsersListItem";
 
-export default class UsersListPage extends React.Component {
+export class UsersListPage extends React.Component {
     componentDidMount() {
         this.loadUsers();
     }
 
     loadUsers() {
-        this.props.dispatch.usersList.loadUsersList();
+        this.props.loadUsersList();
     }
 
     render() {
-        if (this.props.unauthorized) {
-            this.props.dispatch.auth.checkAuth();
-            return null;
-        }
+        const {isLoadingUsers, hasLoadingUsersError, errorMessage, isUsersLoaded, users} = this.props;
 
-        const UsersListRow = ({index, style}) => <UsersListItem style={style} user={this.props.users[index]}/>;
+        const UsersListRow = ({index, style}) => <UsersListItem style={style} user={users[index]}/>;
 
         return (
             <AuthLayout>
@@ -32,15 +29,15 @@ export default class UsersListPage extends React.Component {
                             Список пользователей
                         </Paragraph>
                     </Card>
-                    {this.props.loadingUsers && <Loader/>}
-                    {this.props.loadingUsersError && <LoadingUsersError
-                        message={this.props.errorMessage}
+                    {isLoadingUsers && <Loader/>}
+                    {hasLoadingUsersError && <LoadingUsersError
+                        message={errorMessage}
                         onTryReload={this.loadUsers.bind(this)}
                     />}
-                    {this.props.usersLoaded &&
+                    {isUsersLoaded &&
                     <FixedSizeList
                         height={600}
-                        itemCount={this.props.users.length}
+                        itemCount={users.length}
                         itemSize={81}
                     >
                         {UsersListRow}

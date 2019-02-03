@@ -1,13 +1,10 @@
 import Machine from '@qiwi/cyclone';
 import {UsersApiService} from "../../api/users";
-import ls from '../../storage/localStorage';
-import {AuthError} from "../../error/authError";
 
 const INITIAL = 'init';
 const LOADING_USERS = 'loading_users';
 const OK = 'ok';
 const LOADING_USERS_ERROR = 'loading_users_error';
-const UNAUTHORIZED = 'unauthorized';
 
 const machine = new Machine({
     initialState: INITIAL,
@@ -22,8 +19,6 @@ const machine = new Machine({
         'loading_users>ok': (state, res) => res,
         'loading_users>loading_users_error': (state, res) => res,
         'loading_users_error>loading_users': true,
-        'loading_users>unauthorized': true,
-        'unauthorized>loading_users': true,
     },
 });
 
@@ -45,31 +40,28 @@ export default {
                     items,
                 });
             } catch (err) {
-                if (err instanceof AuthError && err.code === AuthError.UNAUTHORIZED) {
-                    ls.removeItem('jwt');
-                    this.next(UNAUTHORIZED);
-                    return;
-                }
                 this.next(LOADING_USERS_ERROR, {error: {userMessage: 'Что-то пошло не так'}});
             }
         },
     },
     selectors: (slice) => ({
-        unauthorized() {
-            return slice(usersList => usersList.state === UNAUTHORIZED);
-        },
-        usersLoaded() {
+        isUsersLoaded() {
             return slice(usersList => usersList.state === OK);
         },
-        loadingUsers() {
+        isLoadingUsers() {
             return slice(usersList => usersList.state === LOADING_USERS);
         },
-        loadingUsersError() {
+        hasLoadingUsersError() {
             return slice(usersList => usersList.state === LOADING_USERS_ERROR);
         },
-        errorMessage() {
+        getErrorMessage() {
             return slice(usersList => {
-                return (usersList.data && usersList.data.error && usersList.data.error.userMessage) || undefined;
+                return (usersList.data.error && usersList.data.error.userMessage) || undefined;
+            })
+        },
+        getUsers() {
+            return slice(usersList => {
+                return usersList.data.items;
             })
         }
     })
